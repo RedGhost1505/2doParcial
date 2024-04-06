@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+# Normalización de los datos - Aporte de Joshua Alejandro y Diego Rodríguez ;) (Trabajo en conjunto)
+
 # cargamos el dataset con pandas
 train = pd.read_csv("emnist-balanced-train.csv", header=None)
 test = pd.read_csv("emnist-balanced-test.csv",  header=None)
@@ -16,15 +18,22 @@ class_mapping = {
 # X = data[:, 1:]  # Datos (todas las columnas excepto la primera)
 # y = data[:, 0]   # Etiquetas (la primera columna)
 
-
-
 # Separar los datos en características (X) y etiquetas (y)
 
 x_train = train.iloc[:, 1:].values / 255.0  # Normalizar los datos entre 0 y 1, excluyendo la primera columna
-y_train = train.iloc[:, 0].values  
-
-
+y_train = train.iloc[:, 0].values 
+x_test = test.iloc[:, 1:].values / 255.0  # Normalizar los datos entre 0 y 1, excluyendo la primera columna
+y_test = test.iloc[:, 0].values 
 
 print(x_train)
 print(y_train)
+print(x_test)
+print(y_test)
+
+# Entrenamiento de modelo - hecho por cada quién. 
+# Aquí se debe entrenar el modelo con los datos normalizados
+
+
+
+
 
