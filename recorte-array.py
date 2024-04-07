@@ -44,6 +44,7 @@ import matplotlib.pyplot as plt
 #                  """""`.,'         _\`----...' 
 #                         --------""'
 
+
 # Cargamos la imagen
 imagen = cv2.imread("placa.jpeg")
 
@@ -58,10 +59,10 @@ print("Ancho:", n)
 
 # Dimensiones de la región a recortar
 
-x_inicio = [370,393,412,450,472,495,530]
-y_inicio = [340,340,340,345,350,350,357]
-x_fin = [395,415,439,475,495,520,560]
-y_fin = [400,400,400,410,410,420,425]
+x_inicio = [373,393,412,450,472,495,530]
+y_inicio = [340,344,346,345,350,355,357]
+x_fin = [394,415,439,475,495,520,558]
+y_fin = [400,406,406,410,410,420,425]
 
 # Calculamos las dimensiones de la región a recortar
 ancho = []
@@ -100,8 +101,9 @@ cv2.imshow("Imagen original", imagen.astype(np.uint8))
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-
+#---------------------------------------------------------
 #Nota para Diego: Aquí ya puedes empeza a cargar el modelo entrenado y usar las imagenes recortadas para predecir los caracteres, lo que sigue ya es el código de cada quien. 
+
 
 #Cargamos modelo
 model = tf.keras.models.load_model('modelo.h5')
@@ -114,29 +116,44 @@ class_mapping = {
     40: 'f', 41: 'g', 42: 'h', 43: 'n', 44: 'q', 45: 'r', 46: 't'
 }
 
-#Cargamos las imagenes recortadas
 
 for i, img_array in enumerate(nueva_img):
-    # Convertir a imagen PIL y escala de grises
-    img = Image.fromarray(img_array).convert('L')
-    img = img.resize((28, 28))
-    img=Image.fromarray(255-np.array(img))
+#    # Convertir a imagen PIL y escala de grises, y redimensionar
+    img = Image.fromarray(img_array).convert('L').resize((28, 28))
+
+    # Detectar bordes
+    # img = img.filter(ImageFilter.FIND_EDGES)
+    
+    # Convertir a negativo
+    # img = Image.fromarray(255 - np.array(img))
 
     # Reducir contraste
     enhancer = ImageEnhance.Contrast(img)
-    img = enhancer.enhance(0.5)  # Ajusta este valor según sea necesario
+    img = enhancer.enhance(0.7)  # Ajustar este valor según sea necesario
 
-    # Aplicar filtro Gaussiano para reducir ruido
-    img = img.filter(ImageFilter.GaussianBlur(1))  # El radio ajusta la cantidad de suavizado
+    # Eliminar ruido
+    img = img.filter(ImageFilter.MedianFilter(size=3))
+    # img = Image.fromarray(255 - np.array(img))
 
-    # Convertir a numpy array para procesamiento con TF/Keras
+
+    # Convertir a numpy array para procesamiento con TF/Keras, normalizar y añadir la dimensión de batch
     img_array = np.array(img, dtype=np.float32) / 255.0
-    img_array = img_array.reshape(-1, 28, 28)  # Asegurarse de que tenga la forma correcta
+    img_array = img_array.reshape(-1, 28, 28)
+
+#---------------------------------------------------------
+
+    # img = Image.fromarray(img_array).convert('L').resize((28, 28))
+    # umbral = 100
+    # imagen_umbral = img.point(lambda p: p > umbral and 255)
+
+    # img_array = np.array(imagen_umbral, dtype=np.float32) / 255.0
+    # img_array = img_array.reshape(-1, 28, 28)
+
 
     # Mostrar la imagen procesada
     predict = model.predict(img_array)
     plt.imshow(img_array[0], cmap='binary_r')
-    plt.xlabel(f"Yo digo que es un: {class_mapping[np.argmax(predict)]}")
+    plt.xlabel(f"Yo digo que es: {class_mapping[np.argmax(predict)]}")
     plt.show()
 
     # Realizar la predicción
