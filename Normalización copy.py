@@ -59,7 +59,7 @@ model.compile(optimizer='adam',  # Optimizador Adam
 
 # Entrenar el modelo
 print("Entrenando modelo...")
-history = model.fit(x_train_reshaped , y_train, epochs=20, validation_data=(x_test_reshaped, y_test))
+history = model.fit(x_train_reshaped , y_train, epochs=10, validation_data=(x_test_reshaped, y_test))
 
 
 #Evaluamos la precisión del modelo
@@ -76,12 +76,12 @@ predict=model.predict(x_test_reshaped)
 n=random.randint(0,1000)
 print(f'Original: {y_test[n]} Prediccion: {np.argmax(predict[n])}')
 plt.imshow(x_test_reshaped[n],cmap='binary_r')
-plt.xlabel(f"Yo digo que es {class_mapping[np.argmax(predict[n])]}")
+plt.xlabel(f"Yo digo que es {np.argmax(predict[n])}")
 plt.show()
 
 
 # Guardar el modelo
-model.save('modelo.h5')
+# model.save('modelo.h5')
 
 
 
